@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Danish Khan Offline WhatsApp Server❤️</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+<style>
+  :root{
+    --bg-1:#05060f; --bg-2:#0a0d22; --bg-3:#1a0b3d;
+    --neon:#00f5d4; --neon-2:#7c3aed; --neon-3:#f72585;
+    --accent:#fb7185; --whatsapp:#25d366;
+    --glass:rgba(255,255,255,0.04);
+    --glass-strong:rgba(255,255,255,0.08);
+    --border:rgba(124,58,237,0.35);
+    --border-hot:rgba(0,245,212,0.5);
+    --text:#eef0ff; --muted:#9aa3c7; --danger:#ff4d6d; --success:#22e2a5;
+    --shadow-neon:0 0 30px rgba(0,245,212,0.15), 0 0 60px rgba(124,58,237,0.15);
+  }
+  [data-theme="light"]{
+    --bg-1:#f4f5ff; --bg-2:#e9ecff; --bg-3:#dbe2ff;
+    --glass:rgba(255,255,255,0.6); --glass-strong:rgba(255,255,255,0.85);
+    --border:rgba(124,58,237,0.25); --text:#0c1130; --muted:#5b6296;
+    --shadow-neon:0 0 30px rgba(124,58,237,0.15);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:100%;min-height:100vh;overflow-x:hidden}
+  body{
+    font-family:'Space Grotesk',sans-serif;color:var(--text);
+    background:radial-gradient(1200px 800px at 10% -10%,rgba(124,58,237,.35),transparent 60%),
+               radial-gradient(900px 700px at 110% 10%,rgba(0,245,212,.18),transparent 60%),
+               radial-gradient(900px 700px at 50% 120%,rgba(247,37,133,.18),transparent 60%),
+               linear-gradient(180deg,var(--bg-1),var(--bg-2) 50%,var(--bg-3));
+    background-attachment:fixed;
+    transition:background .4s ease,color .3s ease;
+  }
+  body::before{
+    content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+    background:
+      repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 1px,transparent 1px 60px),
+      repeating-linear-gradient(90deg,rgba(255,255,255,.025) 0 1px,transparent 1px 60px);
+    mask-image:radial-gradient(ellipse at center,black 40%,transparent 80%);
+  }
+  .blob{position:fixed;width:520px;height:520px;border-radius:50%;filter:blur(120px);opacity:.55;z-index:0;pointer-events:none;animation:float 18s ease-in-out infinite}
+  .blob.b1{background:#7c3aed;top:-160px;left:-180px}
+  .blob.b2{background:#00f5d4;bottom:-180px;right:-160px;animation-delay:-6s}
+  .blob.b3{background:#f72585;top:50%;left:50%;width:380px;height:380px;animation-delay:-12s;opacity:.35}
+  @keyframes float{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(40px,-30px) scale(1.08)}}
+
+  /* Top status bar */
+  .status-bar{position:fixed;inset:0 0 auto 0;height:66px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:50;
+    background:linear-gradient(90deg,rgba(10,13,34,.85),rgba(26,11,61,.85));
+    backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
+    border-bottom:1px solid var(--border)}
+  [data-theme="light"] .status-bar{background:linear-gradient(90deg,rgba(255,255,255,.85),rgba(240,240,255,.85))}
+  .status-bar-left{display:flex;align-items:center;gap:16px}
+  .sidebar-toggle{background:linear-gradient(135deg,var(--neon-2),var(--neon-3));border:none;color:white;font-size:18px;cursor:pointer;padding:10px 14px;border-radius:12px;transition:all .3s}
+  .sidebar-toggle:hover{transform:translateY(-2px) scale(1.05);box-shadow:0 8px 24px rgba(247,37,133,.4)}
+  .server-name{font-size:18px;font-weight:700;display:flex;align-items:center;gap:12px;letter-spacing:.5px}
+  .server-name .logo-glyph{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,var(--neon),var(--neon-2));box-shadow:0 0 20px rgba(0,245,212,.5);font-size:18px;color:#0b0420}
+  .server-name span.brand{background:linear-gradient(90deg,var(--neon),var(--neon-3));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .status-bar-right{display:flex;align-items:center;gap:10px}
+  .theme-switcher{background:var(--glass-strong);border:1px solid var(--border);color:var(--text);padding:8px;border-radius:10px;cursor:pointer;width:42px;height:42px;display:grid;place-items:center;font-size:18px;transition:all .3s}
+  .theme-switcher:hover{transform:rotate(20deg) scale(1.05);border-color:var(--neon)}
+
+  /* Sidebar */
+  .sidebar{position:fixed;top:66px;left:0;width:260px;height:calc(100vh - 66px);padding:24px 0;z-index:40;overflow-y:auto;
+    background:linear-gradient(180deg,rgba(10,13,34,.82),rgba(26,11,61,.82));
+    backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
+    border-right:1px solid var(--border);transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+  [data-theme="light"] .sidebar{background:linear-gradient(180deg,rgba(255,255,255,.85),rgba(240,240,255,.85))}
+  .sidebar.hidden{transform:translateX(-100%)}
+  .sidebar.show{transform:translateX(0)}
+  .sidebar-header{padding:0 22px 18px;border-bottom:1px solid var(--border);margin-bottom:14px}
+  .sidebar-header h3{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:2px}
+  .sidebar-menu{list-style:none;padding:0 12px}
+  .sidebar-menu li{margin-bottom:6px}
+  .sidebar-menu a{display:flex;align-items:center;gap:14px;padding:13px 16px;color:var(--text);text-decoration:none;border-radius:12px;transition:all .3s;font-weight:500;cursor:pointer;font-size:14px;border:1px solid transparent}
+  .sidebar-menu a:hover{background:var(--glass-strong);border-color:var(--border);transform:translateX(4px)}
+  .sidebar-menu a.active{background:linear-gradient(135deg,rgba(0,245,212,.18),rgba(124,58,237,.25));border-color:var(--border-hot);color:var(--text);box-shadow:var(--shadow-neon)}
+  .sidebar-menu i{font-size:18px;width:22px;text-align:center;color:var(--neon)}
+
+  /* Main */
+  .main-content{margin-left:260px;margin-top:66px;padding:32px;min-height:calc(100vh - 66px);transition:margin-left .35s;position:relative;z-index:1}
+  .main-content.expanded{margin-left:0}
+
+  /* Approval / Auth full-width */
+  .approval-page,.auth-page{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;width:100%;position:relative;z-index:1}
+  .auth-page{display:none}
+  .approval-card,.auth-card{
+    width:100%;max-width:560px;padding:46px 38px;border-radius:24px;
+    background:var(--glass-strong);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+    border:1px solid var(--border);box-shadow:var(--shadow-neon);
+    animation:rise .6s cubic-bezier(.2,.8,.2,1)}
+  @keyframes rise{from{opacity:0;transform:translateY(30px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+  .approval-header,.auth-header{text-align:center;margin-bottom:28px}
+  .approval-header .glow-icon{width:80px;height:80px;margin:0 auto 18px;border-radius:22px;display:grid;place-items:center;background:linear-gradient(135deg,var(--neon),var(--neon-2));font-size:38px;color:#0b0420;box-shadow:0 0 40px rgba(0,245,212,.45);animation:pulse 2.4s ease-in-out infinite}
+  @keyframes pulse{0%,100%{box-shadow:0 0 40px rgba(0,245,212,.45)}50%{box-shadow:0 0 60px rgba(124,58,237,.5)}}
+  .approval-header h1{font-size:30px;font-weight:700;margin-bottom:8px;letter-spacing:-.5px}
+  .approval-header h1 span,.auth-header h2 span{background:linear-gradient(90deg,var(--neon),var(--neon-3));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .approval-header p,.auth-header p{color:var(--muted);font-size:14px}
+  .auth-header h2{font-size:26px;font-weight:700;margin-bottom:8px}
+
+  .approval-key-display{padding:22px;margin:24px 0;text-align:center;border-radius:16px;border:1px dashed var(--border-hot);background:linear-gradient(135deg,rgba(0,245,212,.06),rgba(124,58,237,.06))}
+  .approval-key-display label{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:10px;font-weight:600}
+  .approval-key-display .key{font-size:22px;font-weight:700;font-family:'JetBrains Mono',monospace;letter-spacing:3px;word-break:break-all;background:linear-gradient(90deg,var(--neon),var(--neon-3));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .approval-status{padding:14px;border-radius:12px;margin:18px 0;text-align:center;font-weight:600;display:flex;align-items:center;justify-content:center;gap:10px;font-size:14px;background:rgba(255,77,109,.12);border:1px solid rgba(255,77,109,.4);color:var(--danger)}
+  .approval-status.approved{background:rgba(34,226,165,.12);border-color:rgba(34,226,165,.45);color:var(--success)}
+  .approval-actions{display:flex;flex-direction:column;gap:12px}
+
+  .btn{width:100%;padding:14px 20px;border:none;border-radius:14px;font-size:14.5px;font-weight:600;cursor:pointer;transition:all .3s;display:flex;align-items:center;justify-content:center;gap:10px;font-family:inherit;position:relative;overflow:hidden}
+  .btn::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.18),transparent);transform:translateX(-100%);transition:transform .6s}
+  .btn:hover::after{transform:translateX(100%)}
+  .btn-primary{background:linear-gradient(135deg,var(--neon-2),var(--neon-3));color:#fff;box-shadow:0 8px 24px rgba(124,58,237,.35)}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(247,37,133,.4)}
+  .btn-success{background:linear-gradient(135deg,var(--neon),#10b981);color:#03261b}
+  .btn-success:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,245,212,.4)}
+  .btn-whatsapp{background:linear-gradient(135deg,#25d366,#128c7e);color:#fff}
+  .btn-whatsapp:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(37,211,102,.4)}
+  .btn.loading{pointer-events:none;opacity:.7}
+  .btn .spinner{display:none;width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite}
+  .btn.loading .spinner{display:block}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  .form-group,.form-row{margin-bottom:18px}
+  .form-group label,.form-row label{display:block;margin-bottom:8px;font-size:12.5px;font-weight:600;color:var(--text);letter-spacing:.3px}
+  .form-group input,.form-row input,.form-row select,.form-row textarea{
+    width:100%;padding:13px 16px;background:var(--glass);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:14px;font-family:inherit;transition:all .3s
+  }
+  .form-row select option{background:var(--bg-2);color:var(--text)}
+  .form-group input:focus,.form-row input:focus,.form-row select:focus,.form-row textarea:focus{outline:none;border-color:var(--neon);box-shadow:0 0 0 4px rgba(0,245,212,.15)}
+  .form-group input::placeholder,.form-row input::placeholder,.form-row textarea::placeholder{color:var(--muted)}
+  .auth-switch{text-align:center;margin-top:22px;color:var(--muted);font-size:14px}
+  .auth-switch a{color:var(--neon);text-decoration:none;font-weight:600;cursor:pointer}
+  .auth-switch a:hover{text-decoration:underline}
+
+  .error-msg,.success-msg{padding:12px 14px;border-radius:12px;margin-bottom:16px;font-size:13px;display:none}
+  .error-msg{background:rgba(255,77,109,.12);border:1px solid rgba(255,77,109,.4);color:var(--danger)}
+  .success-msg{background:rgba(34,226,165,.12);border:1px solid rgba(34,226,165,.45);color:var(--success)}
+
+  /* Dashboard */
+  .dashboard,.help-section{display:none}
+  .dashboard-header{padding:32px;margin-bottom:28px;border-radius:22px;background:var(--glass-strong);backdrop-filter:blur(24px);border:1px solid var(--border);box-shadow:var(--shadow-neon)}
+  .dashboard-title{font-size:30px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;letter-spacing:-.5px}
+  .dashboard-title #welcomeText{background:linear-gradient(90deg,var(--neon),var(--neon-3));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .user-badge{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 14px;border-radius:10px;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:1px}
+  .user-badge.admin{background:linear-gradient(135deg,var(--danger),var(--neon-3));color:#fff}
+  .user-badge.user{background:linear-gradient(135deg,var(--neon-2),var(--neon));color:#0b0420}
+  .dashboard-subtitle{color:var(--muted);font-size:14px;margin-bottom:26px}
+
+  .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-bottom:28px}
+  .stat-card{padding:24px;border-radius:18px;background:var(--glass-strong);border:1px solid var(--border);transition:all .35s;position:relative;overflow:hidden}
+  .stat-card::before{content:'';position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,var(--neon),var(--neon-2),var(--neon-3));opacity:.9}
+  .stat-card:hover{transform:translateY(-4px);border-color:var(--border-hot);box-shadow:var(--shadow-neon)}
+  .stat-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+  .stat-card-title{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;font-weight:600}
+  .stat-card-icon{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;font-size:20px;background:linear-gradient(135deg,var(--neon-2),var(--neon-3));color:#fff;box-shadow:0 6px 20px rgba(124,58,237,.3)}
+  .stat-card-value{font-size:30px;font-weight:700;margin-bottom:4px;letter-spacing:-.5px}
+  .stat-card-change{font-size:13px;color:var(--success);display:flex;align-items:center;gap:6px;font-weight:500}
+
+  .dashboard-actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:18px}
+
+  .sessions-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:20px}
+  .session-card{padding:24px;border-radius:18px;background:var(--glass-strong);border:1px solid var(--border);transition:all .35s;position:relative;overflow:hidden;animation:slideIn .5s cubic-bezier(.2,.8,.2,1)}
+  @keyframes slideIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+  .session-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--neon),var(--whatsapp))}
+  .session-card:hover{transform:translateY(-5px);border-color:var(--border-hot);box-shadow:var(--shadow-neon)}
+  .session-id-top{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px;font-weight:600}
+  .session-id-value{font-size:16px;font-family:'JetBrains Mono',monospace;margin-bottom:14px;word-break:break-all;font-weight:600;color:var(--neon)}
+  .session-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;gap:14px;flex-wrap:wrap}
+  .session-title h3{font-size:16px;font-weight:700;margin-bottom:4px;word-break:break-word}
+  .session-owner{font-size:12.5px;color:var(--muted);font-weight:500;display:flex;align-items:center;gap:6px}
+  .session-status{padding:7px 12px;border-radius:10px;font-size:11.5px;font-weight:700;display:flex;align-items:center;gap:6px;white-space:nowrap;background:rgba(34,226,165,.12);border:1px solid rgba(34,226,165,.4);color:var(--success);text-transform:uppercase;letter-spacing:.5px}
+  .session-status .live-dot{width:7px;height:7px;border-radius:50%;background:var(--success);animation:dotPulse 1.6s infinite}
+  @keyframes dotPulse{0%,100%{box-shadow:0 0 0 0 rgba(34,226,165,.7)}70%{box-shadow:0 0 0 8px rgba(34,226,165,0)}}
+  .type-pill{padding:5px 10px;border-radius:8px;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:1px}
+  .type-pill.message{background:rgba(124,58,237,.18);color:#c4b5fd;border:1px solid rgba(124,58,237,.4)}
+  .type-pill.image{background:rgba(0,245,212,.15);color:var(--neon);border:1px solid rgba(0,245,212,.4)}
+  .type-pill.sticker{background:rgba(247,37,133,.18);color:#fda4af;border:1px solid rgba(247,37,133,.45)}
+
+  .session-details{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:18px}
+  .detail-item{padding:11px 13px;border-radius:11px;background:var(--glass);border:1px solid var(--border)}
+  .detail-item label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:5px;font-weight:600}
+  .detail-item span{font-size:13px;font-weight:600;display:block;overflow:hidden;text-overflow:ellipsis;word-break:break-word}
+
+  .session-actions{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+  .btn-small{padding:11px 14px;border-radius:11px;font-size:12.5px;font-weight:600;cursor:pointer;transition:all .3s;display:flex;align-items:center;justify-content:center;gap:7px;border:1px solid var(--border);background:var(--glass);color:var(--text);font-family:inherit}
+  .btn-console:hover{transform:translateY(-2px);background:linear-gradient(135deg,var(--neon-2),var(--neon-3));color:#fff;border-color:transparent}
+  .btn-stop{background:rgba(255,77,109,.1);border-color:rgba(255,77,109,.4);color:var(--danger)}
+  .btn-stop:hover{transform:translateY(-2px);background:linear-gradient(135deg,var(--danger),var(--neon-3));color:#fff;border-color:transparent}
+
+  .empty-state{text-align:center;padding:60px 20px;color:var(--muted);background:var(--glass-strong);border:1px dashed var(--border);border-radius:18px}
+  .empty-state i{font-size:54px;margin-bottom:18px;opacity:.5;color:var(--neon)}
+  .empty-state h3{font-size:20px;margin-bottom:8px;color:var(--text);font-weight:600}
+
+  /* Help */
+  .help-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
+  .help-card{padding:28px;border-radius:18px;background:var(--glass-strong);border:1px solid var(--border);transition:all .35s}
+  .help-card:hover{transform:translateY(-4px);border-color:var(--border-hot);box-shadow:var(--shadow-neon)}
+  .help-card-icon{width:58px;height:58px;border-radius:14px;display:grid;place-items:center;font-size:24px;color:#fff;margin-bottom:18px;background:linear-gradient(135deg,var(--neon-2),var(--neon-3))}
+  .help-card h3{font-size:18px;font-weight:700;margin-bottom:12px}
+  .help-card p{color:var(--muted);line-height:1.6;margin-bottom:12px;font-size:13.5px}
+  .help-card ul{list-style:none;padding-left:0}
+  .help-card ul li{color:var(--muted);padding:6px 0 6px 24px;position:relative;font-size:13.5px}
+  .help-card ul li:before{content:'\f00c';font-family:'Font Awesome 6 Free';font-weight:900;position:absolute;left:0;color:var(--neon)}
+
+  /* Modal */
+  .modal{display:none;position:fixed;inset:0;background:rgba(5,6,15,.75);backdrop-filter:blur(8px);z-index:1000;align-items:center;justify-content:center;padding:20px}
+  .modal.show{display:flex;animation:fadeIn .25s}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  .modal-content{padding:32px;max-width:640px;width:100%;max-height:90vh;overflow-y:auto;border-radius:22px;background:linear-gradient(180deg,#0d1130,#1a0b3d);border:1px solid var(--border-hot);box-shadow:var(--shadow-neon);animation:rise .35s cubic-bezier(.2,.8,.2,1)}
+  [data-theme="light"] .modal-content{background:linear-gradient(180deg,#fff,#f3f4ff)}
+  .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+  .modal-header h3{font-size:22px;font-weight:700;display:flex;align-items:center;gap:12px}
+  .modal-close{background:rgba(255,77,109,.15);border:1px solid rgba(255,77,109,.35);color:var(--danger);font-size:22px;cursor:pointer;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;transition:all .3s}
+  .modal-close:hover{background:var(--danger);color:#fff;transform:rotate(90deg)}
+
+  /* Session-type tabs */
+  .type-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:22px}
+  .type-tab{padding:14px 10px;border-radius:14px;text-align:center;cursor:pointer;border:1px solid var(--border);background:var(--glass);transition:all .3s;font-weight:600;font-size:13.5px;display:flex;flex-direction:column;align-items:center;gap:8px}
+  .type-tab i{font-size:22px;color:var(--neon)}
+  .type-tab.active{background:linear-gradient(135deg,rgba(0,245,212,.15),rgba(124,58,237,.18));border-color:var(--border-hot);box-shadow:0 0 18px rgba(0,245,212,.18)}
+  .type-tab:hover:not(.active){transform:translateY(-2px);border-color:var(--neon-2)}
+
+  .console-viewer{background:#02030a;border:1px solid var(--border);border-radius:14px;padding:18px;max-height:440px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:12.5px}
+  .console-line{padding:7px 10px;margin-bottom:5px;border-radius:8px;background:rgba(255,255,255,.03);color:var(--text);word-break:break-word;border-left:2px solid var(--neon-2)}
+
+  /* Footer */
+  .footer{padding:48px 32px;margin-left:260px;margin-top:48px;background:linear-gradient(0deg,rgba(10,13,34,.85),rgba(26,11,61,.5));backdrop-filter:blur(20px);border-top:1px solid var(--border);transition:margin-left .35s;position:relative;z-index:1}
+  [data-theme="light"] .footer{background:linear-gradient(0deg,rgba(255,255,255,.85),rgba(240,240,255,.5))}
+  .footer.expanded{margin-left:0}
+  .footer-content{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr;gap:48px}
+  .footer-section h4{font-size:18px;font-weight:700;margin-bottom:18px}
+  .footer-section p{color:var(--muted);line-height:1.75;margin-bottom:18px;font-size:14px}
+  .footer-links{list-style:none}
+  .footer-links li{margin-bottom:10px}
+  .footer-links a{color:var(--muted);text-decoration:none;font-size:14px;transition:color .3s}
+  .footer-links a:hover{color:var(--neon)}
+  .social-icons{display:flex;gap:12px;margin-top:18px}
+  .social-icons a{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;color:#fff;text-decoration:none;font-size:16px;background:linear-gradient(135deg,var(--neon-2),var(--neon-3));transition:all .3s}
+  .social-icons a:hover{transform:translateY(-4px) scale(1.05);box-shadow:0 8px 24px rgba(124,58,237,.4)}
+  .footer-bottom{text-align:center;margin-top:36px;padding-top:24px;border-top:1px solid var(--border);color:var(--muted);font-size:13.5px}
+
+  @media(max-width:768px){
+    .sidebar{transform:translateX(-100%)}
+    .sidebar.show{transform:translateX(0)}
+    .main-content{margin-left:0;padding:20px}
+    .footer{margin-left:0;padding:32px 20px}
+    .footer-content{grid-template-columns:1fr;gap:30px}
+    .session-actions{grid-template-columns:1fr}
+    .dashboard-title{font-size:24px}
+    .stat-card-value{font-size:26px}
+    .server-name span.brand{display:none}
+    .status-bar{padding:0 14px}
+    .approval-card,.auth-card{padding:32px 22px}
+    .type-tabs{grid-template-columns:1fr}
+  }
+
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-track{background:rgba(0,0,0,.2)}
+  ::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--neon-2),var(--neon-3));border-radius:6px}
+  ::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,var(--neon),var(--neon-2))}
+</style>
+</head>
+<body data-theme="dark">
+<div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+
+<div id="approvalPage" class="approval-page">
+  <div class="approval-card">
+    <div class="approval-header">
+      <div class="glow-icon"><i class="fab fa-whatsapp"></i></div>
+      <h1>Danish Khan <span> Offline WhatsApp</span> Server❤️</h1>
+        <p>Approval Required to Access Control Panel</p>
+      </div>
+      <div class="approval-key-display">
+        <label>Your Unique Hardware Key</label>
+        <div class="key" id="approvalKeyDisplay">Generating...</div>
+      </div>
+      <div class="approval-status" id="approvalStatus">
+        <i class="fas fa-clock"></i>
+        <span>Waiting for admin approval...</span>
+      </div>
+      <div class="approval-actions">
+        <button class="btn btn-primary" id="checkApprovalBtn">
+          <span class="spinner"></span>
+          <i class="fas fa-check-circle"></i>
+          <span>Check Approval Status</span>
+        </button>
+        <button class="btn btn-whatsapp" id="sendApprovalBtn">
+          <i class="fab fa-whatsapp"></i>
+          <span>Request Approval via WhatsApp</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="status-bar" style="display: none;" id="statusBar">
+    <div class="status-bar-left">
+      <button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-bars"></i></button>
+      <div class="server-name">
+        <i class="fab fa-whatsapp"></i> <span>WhatsApp Server</span>
+      </div>
+    </div>
+    <div class="status-bar-right">
+      <button class="theme-switcher" id="themeSwitcher">
+        <i class="fas fa-moon"></i>
+        <span id="currentTheme">Dark Theme</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="sidebar hidden" id="sidebar" style="display: none;">
+    <div class="sidebar-header"><h3 id="sidebarUserRole">Navigation</h3></div>
+    <ul class="sidebar-menu" id="sidebarMenu"></ul>
+  </div>
+
+  <div class="main-content expanded" id="mainContent" style="display: none;">
+    <div class="auth-page" id="loginPage">
+      <div class="auth-card">
+        <div class="auth-header">
+          <h2>Access Panel</h2>
+          <p>Provide credentials to manage WhatsApp server nodes</p>
+        </div>
+        <div id="loginError" class="error-msg"></div>
+        <div id="loginSuccess" class="success-msg"></div>
+        <form id="loginForm">
+          <div class="form-group">
+            <label><i class="fas fa-user"></i> Username</label>
+            <input type="text" id="loginUsername" placeholder="Enter username" required>
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-lock"></i> Password</label>
+            <input type="password" id="loginPassword" placeholder="Enter password" required>
+          </div>
+          <button type="submit" class="btn btn-primary">
+            <span class="spinner"></span>
+            <i class="fas fa-sign-in-alt"></i><span>Login</span>
+          </button>
+        </form>
+        <div class="auth-switch">Don't have an account? <a id="showSignup">Register here</a></div>
+      </div>
+    </div>
+
+    <div class="auth-page" id="signupPage" style="display: none;">
+      <div class="auth-card">
+        <div class="auth-header">
+          <h2>Create Account</h2>
+          <p>Register access credentials</p>
+        </div>
+        <div id="signupError" class="error-msg"></div>
+        <div id="signupSuccess" class="success-msg"></div>
+        <form id="signupForm">
+          <div class="form-group">
+            <label><i class="fas fa-user"></i> Username</label>
+            <input type="text" id="signupUsername" placeholder="Username (min 3 chars)" required>
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-lock"></i> Password</label>
+            <input type="password" id="signupPassword" placeholder="Password (min 6 chars)" required>
+          </div>
+          <button type="submit" class="btn btn-success">
+            <span class="spinner"></span>
+            <i class="fas fa-user-plus"></i><span>Register Account</span>
+          </button>
+        </form>
+        <div class="auth-switch">Already registered? <a id="showLogin">Login here</a></div>
+      </div>
+    </div>
+
+    <div class="dashboard" id="dashboard">
+      <div class="dashboard-header">
+        <div class="dashboard-title">
+          <span id="welcomeText">Dashboard</span>
+          <span class="user-badge" id="userBadge"><i class="fas fa-user"></i><span id="badgeText">USER</span></span>
+        </div>
+        <div class="dashboard-subtitle" id="userRoleText">Panel Operations</div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <span class="stat-card-title">Server Uptime</span>
+              <div class="stat-card-icon"><i class="fas fa-clock"></i></div>
+            </div>
+            <div class="stat-card-value" id="serverUptime">Loading...</div>
+            <div class="stat-card-change"><i class="fas fa-check-circle"></i><span>System running</span></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <span class="stat-card-title">Sessions</span>
+              <div class="stat-card-icon"><i class="fas fa-server"></i></div>
+            </div>
+            <div class="stat-card-value" id="totalSessions">0</div>
+            <div class="stat-card-change"><i class="fas fa-arrow-up"></i><span>Active loops</span></div>
+          </div>
+          <div class="stat-card" id="totalUsersCard" style="display: none;">
+            <div class="stat-card-header">
+              <span class="stat-card-title">Users</span>
+              <div class="stat-card-icon"><i class="fas fa-users"></i></div>
+            </div>
+            <div class="stat-card-value" id="totalUsers">0</div>
+            <div class="stat-card-change"><i class="fas fa-user-check"></i><span>Registered</span></div>
+          </div>
+        </div>
+        <div class="dashboard-actions">
+          <button class="btn btn-primary" id="createSessionBtn"><i class="fas fa-plus"></i> New Session</button>
+          <button class="btn btn-primary" id="refreshBtn"><i class="fas fa-sync-alt"></i> Reload Status</button>
+        </div>
+      </div>
+      <div id="sessionsContainer"><div class="empty-state"><i class="fas fa-spinner fa-spin"></i><h3>Loading modules...</h3></div></div>
+    </div>
+
+    <div class="help-section" id="helpSection">
+      <div class="dashboard-header">
+        <div class="dashboard-title"><i class="fas fa-question-circle"></i><span>Documentation</span></div>
+        <div class="dashboard-subtitle">WhatsApp server infrastructure and automation instructions</div>
+      </div>
+      <div class="help-grid">
+        <div class="help-card">
+          <div class="help-card-icon"><i class="fas fa-rocket"></i></div>
+          <h3>Getting Started</h3>
+          <p>Deploy and manage multi-purpose automated messaging bots.</p>
+          <ul>
+            <li>Obtain system approval key.</li>
+            <li>Register or sign in to your dashboard.</li>
+            <li>Upload session payloads.</li>
+          </ul>
+        </div>
+        <div class="help-card">
+          <div class="help-card-icon"><i class="fas fa-shield-alt"></i></div>
+          <h3>Security</h3>
+          <p>Authentication and execution layers are built with security first.</p>
+          <ul>
+            <li>Approval system limits node abuse.</li>
+            <li>Payload isolation layers.</li>
+            <li>Encrypted configuration cache.</li>
+          </ul>
+        </div>
+        <div class="help-card">
+          <div class="help-card-icon"><i class="fas fa-cogs"></i></div>
+          <h3>Modules</h3>
+          <p>Use diverse messaging loops depending on your tasks.</p>
+          <ul>
+            <li>Text / file forwarding.</li>
+            <li>Animated sticker loops.</li>
+            <li>Target delivery controls.</li>
+          </ul>
+        </div>
+        <div class="help-card">
+          <div class="help-card-icon"><i class="fas fa-life-ring"></i></div>
+          <h3>Support</h3>
+          <p>Help and operations help desk.</p>
+          <ul>
+            <li>Hotline: +917050407246</li>
+            <li>24/7 Node operations.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer expanded" id="footer" style="display: none;">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h4>WhatsApp Server</h4>
+        <p>Advanced automation and infrastructure engine. Optimized for large loops, file delivery, and uptime management.</p>
+        <div class="social-icons">
+          <a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
+          <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="https://wa.me/+917050407246" title="WhatsApp Support" target="_blank"><i class="fab fa-whatsapp"></i></a>
+        </div>
+      </div>
+      <div class="footer-section">
+        <h4>System Links</h4>
+        <ul class="footer-links">
+          <li><a href="#privacy-policy">Privacy Policy</a></li>
+          <li><a href="#terms-conditions">Terms of Use</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h4>Tech Desk</h4>
+        <ul class="footer-links">
+          <li><a href="#documentation">Documentation API</a></li>
+          <li><a href="https://wa.me/+917050407246" target="_blank">Contact Operator</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom"><p>&copy; 2026 WhatsApp Server Infrastructure. Distributed under Node License.</p></div>
+  </div>
+
+  <div id="createSessionModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3><i class="fas fa-server"></i> Spawn Node Session</h3>
+        <button class="modal-close" id="closeCreateModal">&times;</button>
+      </div>
+      <div id="createSessionError" class="error-msg"></div>
+      <form id="createSessionForm" enctype="multipart/form-data">
+        <div class="form-row">
+          <label><i class="fas fa-layer-group"></i> Module Type</label>
+          <select name="sessionType" id="sessionTypeSelect" required>
+            <option value="message">Message Loop</option>
+            <option value="image">Image Loop</option>
+            <option value="sticker">Sticker Loop</option>
+          </select>
+        </div>
+        <div class="form-row" id="prefixRow">
+          <label><i class="fas fa-signature"></i> Prefix Name</label>
+          <input type="text" name="name" id="prefixInput" placeholder="Enter custom prefix">
+        </div>
+        <div class="form-row">
+          <label><i class="fas fa-list"></i> Target Identifier Type</label>
+          <select name="type" required>
+            <option value="">Select target</option>
+            <option value="contact">Single Contact</option>
+            <option value="gc">Group Chat</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label><i class="fas fa-hashtag"></i> Target Number / ID</label>
+          <input type="text" name="targetID" placeholder="e.g., 917050407246" required>
+        </div>
+        <div class="form-row">
+          <label><i class="fas fa-hourglass-half"></i> Action Delay (seconds)</label>
+          <input type="number" name="delayTime" min="1" value="5" required>
+        </div>
+        <div class="form-row">
+          <label><i class="fas fa-file-code"></i> Auth (creds.json)</label>
+          <input type="file" name="creds" accept=".json" required>
+        </div>
+        <div class="form-row" id="messageFileRow">
+          <label><i class="fas fa-file-alt"></i> Data Payload (.txt)</label>
+          <input type="file" name="messageFile" id="messageFileInput" accept=".txt">
+        </div>
+        <div class="form-row" id="imagesRow" style="display:none;">
+          <label><i class="fas fa-images"></i> Media (.jpg, .png, etc.)</label>
+          <input type="file" name="mediaFiles" id="imagesInput" accept="image/*" multiple>
+        </div>
+        <div class="form-row" id="stickersRow" style="display:none;">
+          <label><i class="fas fa-sticky-note"></i> Sticker Assets (.webp)</label>
+          <input type="file" name="mediaFiles" id="stickersInput" accept=".webp,image/webp" multiple>
+        </div>
+        <button type="submit" class="btn btn-primary"><span class="spinner"></span><i class="fas fa-rocket"></i><span>Initialize Session</span></button>
+      </form>
+    </div>
+  </div>
+
+  <div id="consoleModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3><i class="fas fa-terminal"></i> Node Terminal</h3>
+        <button class="modal-close" id="closeConsoleModal">&times;</button>
+      </div>
+      <div class="console-viewer" id="consoleViewer"><div class="console-line">Retrieving daemon logs...</div></div>
+      <div style="margin-top: 20px;">
+        <button class="btn btn-primary" id="refreshConsole"><i class="fas fa-sync-alt"></i> Reload Logs</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentUser = { username: null, role: null, approvalKey: null };
+    let currentConsoleSessionId = null;
+    let consoleInterval = null;
+    let sidebarOpen = false;
+
+    async function initializeApprovalKey() {
+      let approvalKey = localStorage.getItem('approvalKey');
+      if (!approvalKey) {
+        try {
+          const fingerprint = {
+            userAgent: navigator.userAgent, language: navigator.language,
+            platform: navigator.platform,
+            screenResolution: `${screen.width}x${screen.height}`,
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+          };
+          const response = await fetch('/api/generate-approval-key', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(fingerprint)
+          });
+          const data = await response.json();
+          if (data.ok) { approvalKey = data.approvalKey; localStorage.setItem('approvalKey', approvalKey); }
+        } catch (e) { console.error('Failed to generate key:', e); }
+      }
+      document.getElementById('approvalKeyDisplay').textContent = approvalKey || 'ERR_KEY_GEN';
+      return approvalKey;
+    }
+
+    async function checkApprovalStatus() {
+      const approvalKey = localStorage.getItem('approvalKey');
+      const btn = document.getElementById('checkApprovalBtn');
+      const statusDiv = document.getElementById('approvalStatus');
+      if (!approvalKey) { statusDiv.innerHTML = '<i class="fas fa-times-circle"></i><span>No key found</span>'; return; }
+      btn.classList.add('loading');
+      try {
+        const response = await fetch('/api/check-approval', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ approvalKey })
+        });
+        const data = await response.json();
+        if (data.ok && data.approved) {
+          statusDiv.classList.add('approved');
+          statusDiv.innerHTML = '<i class="fas fa-check-circle"></i><span>Approved. Redirecting...</span>';
+          setTimeout(() => { showLoginPage(); }, 1200);
+        } else {
+          statusDiv.classList.remove('approved');
+          statusDiv.innerHTML = '<i class="fas fa-clock"></i><span>Awaiting approval. Send request via button below.</span>';
+        }
+      } catch (e) { statusDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i><span>Node offline/error</span>'; }
+      finally { btn.classList.remove('loading'); }
+    }
+
+    function sendApprovalRequest() {
+      const approvalKey = localStorage.getItem('approvalKey');
+      if (!approvalKey) { alert('No keys generated'); return; }
+      const message = `[Node Approval Request] Key: ${approvalKey}`;
+      const whatsappUrl = `https://wa.me/917050407246?text=${encodeURIComponent(message)}`;
+      window.open(whatsappUrl, '_blank');
+    }
+
+    function showLoginPage() {
+      document.getElementById('approvalPage').style.display = 'none';
+      document.getElementById('statusBar').style.display = 'flex';
+      document.getElementById('sidebar').style.display = 'block';
+      document.getElementById('mainContent').style.display = 'block';
+      document.getElementById('footer').style.display = 'block';
+      document.getElementById('loginPage').style.display = 'block';
+      currentUser.approvalKey = localStorage.getItem('approvalKey');
+    }
+
+    let isDarkTheme = true;
+    function switchTheme() {
+      isDarkTheme = !isDarkTheme;
+      const theme = isDarkTheme ? 'dark' : 'light';
+      document.body.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
+      const themeIcon = document.querySelector('#themeSwitcher i');
+      const themeText = document.getElementById('currentTheme');
+      if (isDarkTheme) { 
+        themeIcon.className = 'fas fa-moon'; 
+        themeText.textContent = 'Dark Theme'; 
+      } else { 
+        themeIcon.className = 'fas fa-sun'; 
+        themeText.textContent = 'Light Theme'; 
+      }
+    }
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    isDarkTheme = (savedTheme === 'dark');
+    document.body.setAttribute('data-theme', savedTheme);
+    if (!isDarkTheme) { 
+      document.querySelector('#themeSwitcher i').className = 'fas fa-sun'; 
+      document.getElementById('currentTheme').textContent = 'Light Theme'; 
+    }
+    document.getElementById('themeSwitcher').addEventListener('click', switchTheme);
+
+    document.getElementById('sidebarToggle').addEventListener('click', () => {
+      const sidebar = document.getElementById('sidebar');
+      const mainContent = document.getElementById('mainContent');
+      const footer = document.getElementById('footer');
+      sidebarOpen = !sidebarOpen;
+      if (sidebarOpen) {
+        sidebar.classList.remove('hidden');
+        if (window.innerWidth > 768) { 
+          mainContent.classList.remove('expanded'); 
+          footer.classList.remove('expanded'); 
+        } else { 
+          sidebar.classList.add('show'); 
+        }
+      } else {
+        sidebar.classList.add('hidden'); 
+        sidebar.classList.remove('show');
+        mainContent.classList.add('expanded'); 
+        footer.classList.add('expanded');
+      }
+    });
+
+    document.getElementById('checkApprovalBtn').addEventListener('click', checkApprovalStatus);
+    document.getElementById('sendApprovalBtn').addEventListener('click', sendApprovalRequest);
+
+    document.getElementById('showSignup').addEventListener('click', () => {
+      document.getElementById('loginPage').style.display = 'none';
+      document.getElementById('signupPage').style.display = 'block';
+    });
+    document.getElementById('showLogin').addEventListener('click', () => {
+      document.getElementById('signupPage').style.display = 'none';
+      document.getElementById('loginPage').style.display = 'block';
+    });
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = e.target.querySelector('.btn');
+      const username = document.getElementById('loginUsername').value;
+      const password = document.getElementById('loginPassword').value;
+      const approvalKey = localStorage.getItem('approvalKey');
+      const errorDiv = document.getElementById('loginError');
+      errorDiv.style.display = 'none'; btn.classList.add('loading');
+      try {
+        const response = await fetch('/api/login', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password, approvalKey })
+        });
+        const data = await response.json();
+        if (data.ok) {
+          currentUser.username = data.username; currentUser.role = data.role;
+          localStorage.setItem('username', data.username); localStorage.setItem('role', data.role);
+          initDashboard();
+        } else { errorDiv.textContent = data.error || 'Access unauthorized'; errorDiv.style.display = 'block'; }
+      } catch (error) { errorDiv.textContent = 'Network node timeout.'; errorDiv.style.display = 'block'; }
+      finally { btn.classList.remove('loading'); }
+    });
+
+    document.getElementById('signupForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = e.target.querySelector('.btn');
+      const username = document.getElementById('signupUsername').value;
+      const password = document.getElementById('signupPassword').value;
+      const approvalKey = localStorage.getItem('approvalKey');
+      const errorDiv = document.getElementById('signupError');
+      const successDiv = document.getElementById('signupSuccess');
+      errorDiv.style.display = 'none'; successDiv.style.display = 'none'; btn.classList.add('loading');
+      try {
+        const response = await fetch('/api/signup', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password, approvalKey })
+        });
+        const data = await response.json();
+        if (data.ok) {
+          successDiv.textContent = 'Account registered. You may log in now.';
+          successDiv.style.display = 'block';
+          setTimeout(() => {
+            document.getElementById('signupPage').style.display = 'none';
+            document.getElementById('loginPage').style.display = 'block';
+            document.getElementById('loginUsername').value = username;
+          }, 1200);
+        } else { errorDiv.textContent = data.error || 'Registration rejected'; errorDiv.style.display = 'block'; }
+      } catch (error) { errorDiv.textContent = 'Network node timeout.'; errorDiv.style.display = 'block'; }
+      finally { btn.classList.remove('loading'); }
+    });
+
+    function initDashboard() {
+      document.getElementById('loginPage').style.display = 'none';
+      document.getElementById('signupPage').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'block';
+      document.getElementById('welcomeText').textContent = currentUser.username;
+      const badge = document.getElementById('userBadge');
+      const badgeText = document.getElementById('badgeText');
+      if (currentUser.role === 'admin') {
+        badge.classList.remove('user'); badge.classList.add('admin');
+        badgeText.textContent = 'ADMIN'; badge.querySelector('i').className = 'fas fa-shield-halved';
+        document.getElementById('userRoleText').textContent = 'Administrator Control Board';
+      } else {
+        badge.classList.remove('admin'); badge.classList.add('user');
+        badgeText.textContent = 'USER'; badge.querySelector('i').className = 'fas fa-user';
+        document.getElementById('userRoleText').textContent = 'Node User Board';
+      }
+      updateSidebar(); loadSessions(); startServerUptimeUpdate();
+      if (currentUser.role === 'admin') { document.getElementById('totalUsersCard').style.display = 'block'; loadTotalUsers(); }
+    }
+
+    function updateSidebar() {
+      const menu = document.getElementById('sidebarMenu');
+      document.getElementById('sidebarUserRole').textContent = currentUser.role === 'admin' ? 'Administration' : 'Controls';
+      const menuItems = [
+        { icon: 'fa-home', text: 'Dashboard', page: 'dashboard' },
+        { icon: 'fa-question-circle', text: 'Documentation', page: 'help' },
+        { icon: 'fa-sign-out-alt', text: 'Logout', action: 'logout' }
+      ];
+      menu.innerHTML = menuItems.map(item => `<li><a data-page="${item.page || ''}" data-action="${item.action || ''}"><i class="fas ${item.icon}"></i><span>${item.text}</span></a></li>`).join('');
+      menu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', (e) => {
+          const action = e.currentTarget.getAttribute('data-action');
+          const page = e.currentTarget.getAttribute('data-page');
+          if (action === 'logout') logout();
+          else if (page === 'dashboard') showDashboard();
+          else if (page === 'help') showHelp();
+          menu.querySelectorAll('a').forEach(a => a.classList.remove('active'));
+          e.currentTarget.classList.add('active');
+          if (window.innerWidth <= 768) {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.add('hidden'); sidebar.classList.remove('show'); sidebarOpen = false;
+          }
+        });
+      });
+      menu.querySelector('a').classList.add('active');
+    }
+
+    function showDashboard() { document.getElementById('dashboard').style.display = 'block'; document.getElementById('helpSection').style.display = 'none'; loadSessions(); }
+    function showHelp() { document.getElementById('dashboard').style.display = 'none'; document.getElementById('helpSection').style.display = 'block'; }
+
+    function logout() {
+      if (!confirm('Drop current node session?')) return;
+      currentUser = { username: null, role: null, approvalKey: null };
+      localStorage.removeItem('username'); localStorage.removeItem('role');
+      document.getElementById('dashboard').style.display = 'none';
+      document.getElementById('helpSection').style.display = 'none';
+      document.getElementById('loginPage').style.display = 'block';
+      sidebarOpen = false;
+      document.getElementById('sidebar').classList.add('hidden');
+      document.getElementById('mainContent').classList.add('expanded');
+      document.getElementById('footer').classList.add('expanded');
+      if (consoleInterval) { clearInterval(consoleInterval); consoleInterval = null; }
+    }
+
+    function startServerUptimeUpdate() { updateServerUptime(); setInterval(updateServerUptime, 1000); }
+    async function updateServerUptime() {
+      try {
+        const response = await fetch('/api/uptime');
+        const data = await response.json();
+        if (data.ok) document.getElementById('serverUptime').textContent = data.uptimeFormatted;
+      } catch (error) { console.error('Uptime retrieval fail', error); }
+    }
+
+    async function loadTotalUsers() {
+      try {
+        const response = await fetch('/api/total-users', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ role: currentUser.role })
+        });
+        const data = await response.json();
+        if (data.ok) document.getElementById('totalUsers').textContent = data.totalUsers;
+      } catch (error) { console.error('Failed fetching users', error); }
+    }
+
+    async function loadSessions() {
+      const container = document.getElementById('sessionsContainer');
+      try {
+        const response = await fetch('/api/sessions', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: currentUser.username, role: currentUser.role })
+        });
+        const data = await response.json();
+        document.getElementById('totalSessions').textContent = data.sessions?.length || 0;
+        if (data.ok && data.sessions.length > 0) {
+          const grid = document.createElement('div'); grid.className = 'sessions-grid';
+          data.sessions.forEach(session => { grid.appendChild(createSessionCard(session)); });
+          container.innerHTML = ''; container.appendChild(grid);
+        } else {
+          container.innerHTML = `<div class="empty-state"><i class="fas fa-inbox"></i><h3>No running sessions</h3><p>Spawn an engine instance using the button above.</p></div>`;
+        }
+      } catch (error) {
+        container.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>Node Connection Fail</h3><p>${error.message}</p></div>`;
+      }
+    }
+
+    function createSessionCard(session) {
+      const card = document.createElement('div'); card.className = 'session-card';
+      const createdDate = new Date(session.createdAt).toLocaleString();
+      const stype = (session.sessionType || 'message');
+      const typeIcon = stype === 'image' ? 'fa-image' : (stype === 'sticker' ? 'fa-sticky-note' : 'fa-comment-dots');
+      const typeLabel = stype.charAt(0).toUpperCase() + stype.slice(1);
+      const titleText = stype === 'sticker' ? `Sticker Bot` : (session.prefixName || 'Bot');
+      card.innerHTML = `
+        <div class="session-header">
+          <div class="session-title"><h3>${titleText}</h3><p>${session.sessionId}</p></div>
+          <div class="session-status"><i class="fas fa-circle"></i> Running</div>
+        </div>
+        <div class="session-details">
+          <div class="detail-item"><label><i class="fas ${typeIcon}"></i> Module</label><span>${typeLabel}${session.mediaCount ? ` (${session.mediaCount})` : ''}</span></div>
+          <div class="detail-item"><label><i class="fas fa-clock"></i> Uptime</label><span>${session.uptime}</span></div>
+          <div class="detail-item"><label><i class="fas fa-hourglass-half"></i> Delay</label><span>${session.delayMs / 1000}s</span></div>
+          <div class="detail-item"><label><i class="fas fa-calendar"></i> Spawn Date</label><span>${createdDate}</span></div>
+          <div class="detail-item"><label><i class="fas fa-user"></i> Controller</label><span>${session.username}</span></div>
+        </div>
+        <div class="session-actions">
+          <button class="btn-small btn-console" data-session-id="${session.sessionId}"><i class="fas fa-terminal"></i> Terminal</button>
+          <button class="btn-small btn-stop" data-session-id="${session.sessionId}"><i class="fas fa-stop"></i> Terminate</button>
+        </div>`;
+      card.querySelector('.btn-console').addEventListener('click', () => openConsole(session.sessionId));
+      card.querySelector('.btn-stop').addEventListener('click', () => stopSession(session.sessionId));
+      return card;
+    }
+
+    document.getElementById('refreshBtn').addEventListener('click', () => loadSessions());
+
+    const createSessionModal = document.getElementById('createSessionModal');
+    document.getElementById('createSessionBtn').addEventListener('click', () => createSessionModal.classList.add('show'));
+    document.getElementById('closeCreateModal').addEventListener('click', () => createSessionModal.classList.remove('show'));
+
+    document.getElementById('createSessionForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = e.target.querySelector('.btn');
+      const errorDiv = document.getElementById('createSessionError');
+      const sessionType = document.getElementById('sessionTypeSelect').value;
+      const formData = new FormData();
+      const form = e.target;
+      formData.append('sessionType', sessionType);
+      formData.append('type', form.querySelector('[name="type"]').value);
+      formData.append('targetID', form.querySelector('[name="targetID"]').value);
+      formData.append('delayTime', form.querySelector('[name="delayTime"]').value);
+      if (sessionType !== 'sticker') {
+        formData.append('name', form.querySelector('[name="name"]').value || 'Bot');
+      }
+      const credsFile = form.querySelector('[name="creds"]').files[0];
+      if (credsFile) formData.append('creds', credsFile);
+      if (sessionType === 'message' || sessionType === 'image') {
+        const msgFile = document.getElementById('messageFileInput').files[0];
+        if (msgFile) formData.append('messageFile', msgFile);
+      }
+      if (sessionType === 'image') {
+        const imgFiles = document.getElementById('imagesInput').files;
+        if (!imgFiles.length) { errorDiv.textContent = 'Upload at least one image/media file'; errorDiv.style.display = 'block'; return; }
+        for (const f of imgFiles) formData.append('mediaFiles', f);
+      }
+      if (sessionType === 'sticker') {
+        const stkFiles = document.getElementById('stickersInput').files;
+        if (!stkFiles.length) { errorDiv.textContent = 'Upload at least one sticker asset'; errorDiv.style.display = 'block'; return; }
+        for (const f of stkFiles) formData.append('mediaFiles', f);
+      }
+      formData.append('username', currentUser.username);
+      formData.append('approvalKey', currentUser.approvalKey);
+      errorDiv.style.display = 'none'; btn.classList.add('loading');
+      try {
+        const response = await fetch('/send-message', { method: 'POST', body: formData });
+        const data = await response.json();
+        if (data.ok) {
+          createSessionModal.classList.remove('show');
+          e.target.reset();
+          updateSessionTypeUI();
+          loadSessions();
+        } else { errorDiv.textContent = data.error || 'Failed to initialize session'; errorDiv.style.display = 'block'; }
+      } catch (error) { errorDiv.textContent = 'Network timeout.'; errorDiv.style.display = 'block'; }
+      finally { btn.classList.remove('loading'); }
+    });
+
+    function updateSessionTypeUI() {
+      const sel = document.getElementById('sessionTypeSelect');
+      if (!sel) return;
+      const type = sel.value;
+      const prefixRow = document.getElementById('prefixRow');
+      const prefixInput = document.getElementById('prefixInput');
+      const messageFileRow = document.getElementById('messageFileRow');
+      const messageFileInput = document.getElementById('messageFileInput');
+      const imagesRow = document.getElementById('imagesRow');
+      const imagesInput = document.getElementById('imagesInput');
+      const stickersRow = document.getElementById('stickersRow');
+      const stickersInput = document.getElementById('stickersInput');
+      if (type === 'message') {
+        prefixRow.style.display = ''; prefixInput.required = true;
+        messageFileRow.style.display = ''; messageFileInput.required = true;
+        imagesRow.style.display = 'none'; imagesInput.required = false; imagesInput.value = '';
+        stickersRow.style.display = 'none'; stickersInput.required = false; stickersInput.value = '';
+      } else if (type === 'image') {
+        prefixRow.style.display = ''; prefixInput.required = true;
+        messageFileRow.style.display = ''; messageFileInput.required = true;
+        imagesRow.style.display = ''; imagesInput.required = true;
+        stickersRow.style.display = 'none'; stickersInput.required = false; stickersInput.value = '';
+      } else if (type === 'sticker') {
+        prefixRow.style.display = 'none'; prefixInput.required = false; prefixInput.value = '';
+        messageFileRow.style.display = 'none'; messageFileInput.required = false; messageFileInput.value = '';
+        imagesRow.style.display = 'none'; imagesInput.required = false; imagesInput.value = '';
+        stickersRow.style.display = ''; stickersInput.required = true;
+      }
+    }
+    document.getElementById('sessionTypeSelect').addEventListener('change', updateSessionTypeUI);
+    updateSessionTypeUI();
+
+    const consoleModal = document.getElementById('consoleModal');
+    function openConsole(sessionId) {
+      currentConsoleSessionId = sessionId;
+      consoleModal.classList.add('show');
+      loadConsole();
+      if (consoleInterval) clearInterval(consoleInterval);
+      consoleInterval = setInterval(loadConsole, 3000);
+    }
+
+    async function loadConsole() {
+      if (!currentConsoleSessionId) return;
+      try {
+        const response = await fetch(`/api/logs/${currentConsoleSessionId}`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: currentUser.username, role: currentUser.role })
+        });
+        const data = await response.json();
+        if (data.ok && data.logs) {
+          const viewer = document.getElementById('consoleViewer');
+          viewer.innerHTML = '';
+          if (data.logs.length === 0) viewer.innerHTML = '<div class="console-line">Log buffer empty.</div>';
+          else {
+            data.logs.forEach(log => {
+              const line = document.createElement('div');
+              line.className = 'console-line'; line.textContent = log;
+              viewer.appendChild(line);
+            });
+            viewer.scrollTop = viewer.scrollHeight;
+          }
+        }
+      } catch (error) { console.error('Failed streaming logs', error); }
+    }
+
+    document.getElementById('closeConsoleModal').addEventListener('click', () => {
+      consoleModal.classList.remove('show');
+      if (consoleInterval) { clearInterval(consoleInterval); consoleInterval = null; }
+      currentConsoleSessionId = null;
+    });
+    document.getElementById('refreshConsole').addEventListener('click', () => loadConsole());
+
+    async function stopSession(sessionId) {
+      if (!confirm('Terminate session instance?')) return;
+      try {
+        const response = await fetch(`/stop-session/${sessionId}`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: currentUser.username })
+        });
+        const data = await response.json();
+        if (data.ok) loadSessions();
+        else alert(data.error || 'Engine instance action failed');
+      } catch (error) { alert('Network timeout.'); }
+    }
+
+    const savedUsername = localStorage.getItem('username');
+    const savedRole = localStorage.getItem('role');
+    const savedApprovalKey = localStorage.getItem('approvalKey');
+    
+    if (savedUsername && savedRole && savedApprovalKey) {
+      fetch('/api/check-approval', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ approvalKey: savedApprovalKey })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.ok && data.approved) {
+          currentUser.username = savedUsername;
+          currentUser.role = savedRole;
+          currentUser.approvalKey = savedApprovalKey;
+          showLoginPage(); initDashboard();
+        } else { initializeApprovalKey(); }
+      })
+      .catch(() => { initializeApprovalKey(); });
+    } else { initializeApprovalKey(); }
+  </script>
+</body>
+</html> 
